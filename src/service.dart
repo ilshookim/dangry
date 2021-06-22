@@ -63,11 +63,12 @@ class Service {
       int count = newly - older;
       print('$function: count=$count (older=$older, newly=$newly), destination=$_destination:$_destinationPort');
 
-      String connection = 'ws://echo.websocket.org';
+      // String connection = 'ws://echo.websocket.org';
+      String connection = 'ws://localhost:8080';
       print('$function: connect to $connection');
       WebSocket.connect(connection).then((WebSocket ws) {
         wsConnections.add(ws);
-        handleWebSocket(ws);
+        // handleWebSocket(ws);
       });
 
       succeed = true;
