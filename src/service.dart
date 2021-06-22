@@ -17,7 +17,7 @@ class Service {
   String data = Global.defaultDataOption;
   String app = Global.defaultAppOption;
 
-  List<WebSocket> wsConnections = List.empty(growable: true);
+  Map<WebSocket, String> _connections = Map();
 
   Stopwatch _consume = Stopwatch();
   Timer? _timer;
@@ -54,22 +54,28 @@ class Service {
     final String function = Trace.current().frames[0].member!;
     bool succeed = false;
     try {
-      final String _connections = connections ?? this.conns;
-      final String _destination = destination ?? this.dest;
-      final String _destinationPort = destinationPort ?? this.destPort;
+      final String conns = connections ?? this.conns;
+      final String dest = destination ?? this.dest;
+      final String destPort = destinationPort ?? this.destPort;
       final int older = int.tryParse(this.conns)!;
-      final int newly = int.tryParse(_connections)!;
+      final int newly = int.tryParse(conns)!;
 
       int count = newly - older;
-      print('$function: count=$count (older=$older, newly=$newly), destination=$_destination:$_destinationPort');
+      print('$function: count=$count (older=$older, newly=$newly), destination=$dest:$destPort');
 
-      // String connection = 'ws://echo.websocket.org';
-      String connection = 'ws://localhost:8080';
-      print('$function: connect to $connection');
-      WebSocket.connect(connection).then((WebSocket ws) {
-        wsConnections.add(ws);
-        // handleWebSocket(ws);
-      });
+      String connection = 'ws://$dest:$destPort';
+      print('$function: connect: count=$count, url=$connection');
+      while (count > 0) {
+        WebSocket.connect(connection).then((WebSocket ws) {
+          final DateTime now = DateTime.now();
+          final String cid = now.toIso8601String();
+          _connections[ws] = cid;
+          print('$function: connected: connections=${_connections.length}, cid=$cid, url=$connection');
+
+          handleWebSocket(ws, cid);
+        });
+        count--;
+      }
 
       succeed = true;
     } catch (exc) {
@@ -78,16 +84,22 @@ class Service {
     return succeed;
   }
 
-  bool handleWebSocket(WebSocket ws) {
+  bool handleWebSocket(WebSocket ws, String cid) {
     final String function = Trace.current().frames[0].member!;
     bool succeed = false;
     try {
-      final String data = 'hello, world';
-      print('$function: sent=$data');
-      ws.add(data);
+      final String message = 'hello, world';
+      print('$function: cid=$cid, sent=$message');
+      ws.add(message);
+
       ws.listen((data) { 
-        print('$function: received=$data');
+        print('$function: cid=$cid, received=$data');
+      }, onDone: () {
+        print('close: cid=$cid');
+      }, onError: (error) {
+        print('error: cid=$cid, error=$error');
       });
+
       succeed = true;
     } catch (exc) {
       print('$function: $exc');
