@@ -63,12 +63,15 @@ class API {
     return Response.ok(message + '\n');
   }
 
+  /// set: curl http://localhost:8088/v1/set?id=0&count=1&data=10KB&app=home
   Response onSet(Request request) {
     final String function = Trace.current().frames[0].member!;
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
-      message = 'set: ';
+      final String value = 'hello';
+      service.set(value);
+      message = 'set: $value';
     } catch (exc) {
       message = '$function: $exc';
     } finally {

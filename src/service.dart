@@ -63,16 +63,12 @@ class Service {
       int count = newly - older;
       print('$function: count=$count (older=$older, newly=$newly), destination=$dest:$destPort');
 
-      String connection = 'ws://$dest:$destPort';
-      print('$function: connect: count=$count, url=$connection');
+      String url = 'ws://$dest:$destPort';
+      print('$function: connect: count=$count, url=$url');
       while (count > 0) {
-        WebSocket.connect(connection).then((WebSocket ws) {
-          final DateTime now = DateTime.now();
-          final String cid = now.toIso8601String();
-          _connections[ws] = cid;
-          print('$function: connected: connections=${_connections.length}, cid=$cid, url=$connection');
-
-          handleWebSocket(ws, cid);
+        WebSocket.connect(url).then((WebSocket ws) {
+          final String cid = _connected(ws, url);
+          _listen(ws, cid);
         });
         count--;
       }
@@ -84,22 +80,51 @@ class Service {
     return succeed;
   }
 
-  bool handleWebSocket(WebSocket ws, String cid) {
+  String _connected(WebSocket ws, String url) {
+    final String function = Trace.current().frames[0].member!;
+    final DateTime now = DateTime.now();
+    final String cid = now.toIso8601String();
+    try {
+      _connections[ws] = cid;
+    } catch (exc) {
+      print('$function: $exc');
+    } finally {
+      print('$function: connections=${_connections.length}, cid=$cid, url=$url');
+    }
+    return cid;
+  }
+
+  bool _listen(WebSocket ws, String cid) {
     final String function = Trace.current().frames[0].member!;
     bool succeed = false;
     try {
-      final String message = 'hello, world';
-      print('$function: cid=$cid, sent=$message');
-      ws.add(message);
-
       ws.listen((data) { 
         print('$function: cid=$cid, received=$data');
       }, onDone: () {
-        print('close: cid=$cid');
+        _connections.remove(ws);
+        print('close: cid=$cid, connections=${_connections.length}');
       }, onError: (error) {
-        print('error: cid=$cid, error=$error');
+        _connections.remove(ws);
+        print('error: cid=$cid, connections=${_connections.length}, error=$error');
       });
 
+      succeed = true;
+    } catch (exc) {
+      print('$function: $exc');
+    }
+    return succeed;
+  }
+
+  bool set(String message) {
+    final String function = Trace.current().frames[0].member!;
+    bool succeed = false;
+    try {
+      _connections.forEach((ws, cid) {
+        final Map payload = { 'cid': cid, 'msg': message };
+        Stopwatch sw = Stopwatch()..start();
+        ws.add('$payload');
+        print('$function: cid=$cid, sent=$payload, consumed=${sw.elapsed}');
+      });
       succeed = true;
     } catch (exc) {
       print('$function: $exc');
