@@ -100,7 +100,7 @@ class Service {
   }
 
   Future<bool> _stats(message, String cid) async {
-    final String function = 'Service._listen';
+    final String function = 'Service._stats';
     bool succeed = false;
     try {
       final int ts4 = DateTime.now().millisecondsSinceEpoch;
