@@ -86,7 +86,7 @@ class API {
       final String? dataParam = uri.queryParameters[Global.paramData];
       final String data = dataParam ?? "(empty)";
       final int connections = service.connections();
-      message = 'connections=$connections, data=$data';
+      message = 'connections=$connections, data: length=${data.length}';
       service.set(data);
     } catch (exc) {
       message = '$function: $exc';
