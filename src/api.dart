@@ -131,14 +131,10 @@ class API {
       router.get(uri(Global.uriSet, version: ver1), onSet);
       router.get(uri(Global.uriGetDel, version: ver1), onGetDel);
 
-      final Handler index = createStaticHandler(Global.currentPath,
-          defaultDocument: Global.indexName);
-      final Handler favicon = createStaticHandler(Global.currentPath,
-          defaultDocument: Global.faviconName);
-      final Handler cascade =
-          Cascade().add(index).add(favicon).add(router).handler;
-      final Handler handler =
-          Pipeline().addMiddleware(logRequests()).addHandler(cascade);
+      final Handler index = createStaticHandler(Global.currentPath, defaultDocument: Global.indexName);
+      final Handler favicon = createStaticHandler(Global.currentPath, defaultDocument: Global.faviconName);
+      final Handler cascade = Cascade().add(index).add(favicon).add(router).handler;
+      final Handler handler = Pipeline().addMiddleware(logRequests()).addHandler(cascade);
       return handler;
     } catch (exc) {
       print('$function: $exc');
