@@ -106,12 +106,12 @@ class Service {
     bool succeed = false;
     try {
       ws.listen((message) { 
-        // final int ended = DateTime.now().microsecondsSinceEpoch;
-        // final Map payload = json.decode(message);
-        // final String pts = payload['msg']['pts'];
-        // final int began = int.tryParse(pts) ?? ended;
-        // final int dur = ended - began;
-        // print('$function: dur=${dur / 1000} ms, cid=$cid, received: length=${message.length}');
+        final int ended = DateTime.now().millisecondsSinceEpoch;
+        final Map payload = json.decode(message);
+        final String pts = payload['pts'];
+        final int began = int.tryParse(pts) ?? ended;
+        final int dur = ended - began;
+        print('$function: dur=$dur ms, cid=$cid, received: length=${message.length}');
 
         // print('$function: cid=$cid, received: length=${message.length}');
       }, onDone: () {
