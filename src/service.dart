@@ -15,6 +15,7 @@ class Service {
   String destination = Global.defaultDestinationOption;
   String data = Global.defaultDataOption;
   String app = Global.defaultAppOption;
+  String epoch = Global.defaultEpochOption;
 
   Map<WebSocket, String> _connections = Map();
 
@@ -79,10 +80,15 @@ class Service {
     return succeed;
   }
 
+  String _cid() {
+    final DateTime now = DateTime.now();
+    if (epoch.parseBool()) return '${now.microsecondsSinceEpoch}';
+    return now.toIso8601String();
+  }
+
   String _connected(WebSocket ws, String url) {
     final String function = Trace.current().frames[0].member!;
-    final DateTime now = DateTime.now();
-    final String cid = now.toIso8601String();
+    final String cid = _cid();
     try {
       _connections[ws] = cid;
     } catch (exc) {

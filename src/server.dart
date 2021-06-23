@@ -27,6 +27,7 @@ void main(List<String> arguments) async {
     /// destinationPort : default destination port  ex) 9450
     /// app             : default app               ex) home
     /// data            : default data              ex) 3KB, 10KB, 20KB, 30KB
+    /// epoch           : default cid epoch         default) disable
     /// 
     final ArgParser argParser = ArgParser()
       ..addOption(Global.portOption, abbr: Global.portAbbrOption)
@@ -34,7 +35,8 @@ void main(List<String> arguments) async {
       ..addOption(Global.destinationOption, abbr: Global.destinationAbbrOption)
       ..addOption(Global.destinationPortOption, abbr: Global.destinationPortAbbrOption)
       ..addOption(Global.appOption, abbr: Global.appAbbrOption)
-      ..addOption(Global.dataOption, abbr: Global.dataAbbrOption);
+      ..addOption(Global.dataOption, abbr: Global.dataAbbrOption)
+      ..addOption(Global.epochOption, abbr: Global.epochAbbrOption);
     final ArgResults argResults = argParser.parse(arguments);
     final String portOption = argResults[Global.portOption] ?? Platform.environment[Global.portEnvOption] ?? Global.defaultPortOption;
     final String connectionsOption = argResults[Global.connectionsOption] ?? Platform.environment[Global.connectionsEnvOption] ?? Global.defaultConnectionsOption;
@@ -42,6 +44,7 @@ void main(List<String> arguments) async {
     final String destinationPortOption = argResults[Global.destinationPortOption] ?? Platform.environment[Global.destinationPortEnvOption] ?? Global.defaultDestinationPortOption;
     final String appOption = argResults[Global.appOption] ?? Platform.environment[Global.appEnvOption] ?? Global.defaultAppOption;
     final String dataOption = argResults[Global.dataOption] ?? Platform.environment[Global.dataEnvOption] ?? Global.defaultDataOption;
+    final String epochOption = argResults[Global.epochOption] ?? Platform.environment[Global.epochEnvOption] ?? Global.defaultEpochOption;
 
     /// API
     /// 
@@ -59,6 +62,7 @@ void main(List<String> arguments) async {
       destination: destinationOption,
       data: dataOption,
       app: appOption,
+      epoch: epochOption,
     );
     final HttpServer server = await serve(handler, host, port);
 

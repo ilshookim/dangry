@@ -37,6 +37,10 @@ class Global {
   static final String appAbbrOption = 'a';
   static final String defaultAppOption = 'home';
   static final String appEnvOption = '${defaultApp}_APP';
+  static final String epochOption = 'epoch';
+  static final String epochAbbrOption = 'h';
+  static final String defaultEpochOption = 'false';
+  static final String epochEnvOption = '${defaultApp}_EPOCH';
 
   static final String uriConfigure = "configure";
   static final String uriOpen = "open";

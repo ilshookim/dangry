@@ -115,7 +115,8 @@ class API {
     String? destination,
     String? destinationPort,
     String? app,
-    String? data}) {
+    String? data,
+    String? epoch}) {
     final String function = Trace.current().frames[0].member!;
     try {
       router.get(uri(Global.uriConfigure), onConfigure);
@@ -147,6 +148,7 @@ class API {
       service.destinationPort = destinationPort ?? service.destinationPort;
       service.data = data ?? service.data;
       service.app = app ?? service.app;
+      service.epoch = epoch ?? service.epoch;
     }
     final Handler defaultHandler = Pipeline().addHandler((Request request) {
       return Response.ok('Request for ${request.url}');
