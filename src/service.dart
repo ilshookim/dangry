@@ -125,7 +125,7 @@ class Service {
     final String function = 'Service._listen';
     bool succeed = false;
     try {
-      ws.listen((message) { 
+      ws.listen((message) async { 
         _stats(message, cid);
       }, onDone: () {
         _connections.remove(ws);
