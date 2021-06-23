@@ -99,19 +99,34 @@ class Service {
     return cid;
   }
 
+  Future<bool> _stats(message, String cid) async {
+    final String function = 'Service._listen';
+    bool succeed = false;
+    try {
+      final int ts4 = DateTime.now().millisecondsSinceEpoch;
+      final Map payload = json.decode(message);
+      final int ts1 = int.tryParse(payload['ts1'])!;
+      final int ts2 = int.tryParse(payload['ts2'])!;
+      final int ts3 = int.tryParse(payload['ts3'])!;
+
+      final int total = ts4 - ts1;
+      final int sent = ts2 - ts1;
+      final int droxy = ts3 - ts2;
+      final int received = ts4 - ts3;
+
+      print('$function: recv: total=$total ms (sent=$sent ms, droxy=$droxy ms, received=$received ms), cid=$cid, length=${message.length}');
+    } catch (exc) {
+      print('$function: $exc');
+    }
+    return succeed;
+  }
+
   bool _listen(WebSocket ws, String cid) {
     final String function = 'Service._listen';
     bool succeed = false;
     try {
       ws.listen((message) { 
-        final int ended = DateTime.now().millisecondsSinceEpoch;
-        final Map payload = json.decode(message);
-        final String pts = payload['pts'];
-        final int began = int.tryParse(pts) ?? ended;
-        final int dur = ended - began;
-        print('$function: dur=$dur ms, cid=$cid, received: length=${message.length}');
-
-        // print('$function: cid=$cid, received: length=${message.length}');
+        _stats(message, cid);
       }, onDone: () {
         _connections.remove(ws);
         print('close: cid=$cid, connections=${_connections.length}');
@@ -127,15 +142,16 @@ class Service {
     return succeed;
   }
 
-  bool set(String message) {
+  Future<bool> set(String message) async {
     final String function = 'Service.set';
     bool succeed = false;
     try {
       _connections.forEach((ws, cid) {
-        Stopwatch sw = Stopwatch()..start();
-        final Map payload = { 'cid': '$cid', 'msg': message, 'data': data10KB(), 'pts': '${DateTime.now().millisecondsSinceEpoch}' };
-        ws.add('${json.encode(payload)}');
-        print('$function: cid=$cid, sent: length=${payload.length}, consumed=${sw.elapsed.inMicroseconds / 1000} ms');
+        // Stopwatch sw = Stopwatch()..start();
+        final int ts1 = DateTime.now().millisecondsSinceEpoch;
+        final Map payload = { 'cid': '$cid', 'msg': message, 'data': data10KB(), 'ts1': '$ts1' };
+        ws.add(json.encode(payload));
+        // print('$function: cid=$cid, sent: length=${payload.length}, consumed=${sw.elapsed.inMicroseconds / 1000} ms');
       });
       succeed = true;
     } catch (exc) {
