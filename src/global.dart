@@ -46,9 +46,9 @@ class Global {
   static final String uriClose = "close";
   static final String uriSet = "set";
   static final String uriGetDel = "getdel";
-  static final String paramDestination = destinationOption;
-  static final String paramDestinationPort = destinationPortOption;
-  static final String paramConnections = connectionsOption;
+  static final String paramDestination = "dest";
+  static final String paramDestinationPort = "port";
+  static final String paramConnections = "count";
   static final String paramData = dataOption;
   static final String paramApp = appOption;
 

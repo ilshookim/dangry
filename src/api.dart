@@ -38,7 +38,7 @@ class API {
     return Response.ok(message + '\n');
   }
 
-  /// open: curl http://localhost:8080/v1/open?connections=450&destination=localhost&port=2404
+  /// open: curl http://localhost:8080/v1/open?count=450&dest=localhost&port=2404
   Response onOpen(Request request) {
     final String function = 'API.onOpen';
     final Uri uri = request.requestedUri;

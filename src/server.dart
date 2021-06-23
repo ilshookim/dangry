@@ -47,8 +47,8 @@ void main(List<String> arguments) async {
 
     /// API
     /// 
-    /// configure:  curl http://localhost:8088/v1/configure?data=3KB&app=home1&connections=450
-    /// open:       curl http://localhost:8080/v1/open?connections=450&destination=localhost&port=2404
+    /// configure:  curl http://localhost:8088/v1/configure?data=3KB&app=home1
+    /// open:       curl http://localhost:8080/v1/open?count=450&dest=localhost&port=2404
     /// close:      curl http://localhost:8080/v1/close
     /// set:        curl http://localhost:8088/v1/set?id=0&count=1&data=10KB&app=home
     /// getdel:     curl http://localhost:8088/v1/getdel?id=0&count=1&app=home
