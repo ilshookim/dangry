@@ -7,8 +7,6 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:stack_trace/stack_trace.dart';
-
 import 'global.dart';
 import 'data.dart';
 
@@ -25,7 +23,7 @@ class Service {
     String? connections, 
     String? destination, 
     String? destinationPort}) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Service.open';
     int count = 0;
     try {
       final String conns = connections ?? "0";
@@ -44,7 +42,7 @@ class Service {
   }
 
   int close() {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Service.close';
     int count = 0;
     try {
       _connections.forEach((ws, cid) {
@@ -64,7 +62,7 @@ class Service {
   }
 
   Future<bool> _makeConnections(String url, int count) async {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Service._makeConnections';
     bool succeed = false;
     try {
       print('$function: connect: count=$count, url=$url');
@@ -89,7 +87,7 @@ class Service {
   }
 
   String _connected(WebSocket ws, String url) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Service._connected';
     final String cid = _cid();
     try {
       _connections[ws] = cid;
@@ -102,7 +100,7 @@ class Service {
   }
 
   bool _listen(WebSocket ws, String cid) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Service._listen';
     bool succeed = false;
     try {
       ws.listen((message) { 
@@ -130,7 +128,7 @@ class Service {
   }
 
   bool set(String message) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Service.set';
     bool succeed = false;
     try {
       _connections.forEach((ws, cid) {

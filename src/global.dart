@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
-import 'package:stack_trace/stack_trace.dart';
 
 class Global {
   static final String defaultApp = 'DANGRY';
@@ -65,7 +64,7 @@ class Global {
   static final String description = 'description';
 
   static Future<Map> pubspec() async {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'Global.pubspec';
     Map yaml = Map();
     try {
       final String path = join(current, yamlName);

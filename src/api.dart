@@ -5,7 +5,6 @@
 ///
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';
-import 'package:stack_trace/stack_trace.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
 
@@ -18,7 +17,7 @@ class API {
 
   /// configure: curl http://localhost:8088/v1/configure?data=3KB&app=home1&connections=450
   Response onConfigure(Request request) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'API.onConfigure';
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
@@ -41,7 +40,7 @@ class API {
 
   /// open: curl http://localhost:8080/v1/open?connections=450&destination=localhost&port=2404
   Response onOpen(Request request) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'API.onOpen';
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
@@ -63,7 +62,7 @@ class API {
 
   /// close: curl http://localhost:8080/v1/close
   Response onClose(Request request) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'API.onClose';
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
@@ -79,7 +78,7 @@ class API {
 
   /// set: curl http://localhost:8088/v1/set?id=0&count=1&data=10KB&app=home
   Response onSet(Request request) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'API.onSet';
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
@@ -97,7 +96,7 @@ class API {
   }
 
   Response onGetDel(Request request) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'API.onGetDel';
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
@@ -117,7 +116,7 @@ class API {
     String? app,
     String? data,
     String? epoch}) {
-    final String function = Trace.current().frames[0].member!;
+    final String function = 'API.v1';
     try {
       router.get(uri(Global.uriConfigure), onConfigure);
       router.get(uri(Global.uriOpen), onOpen);
