@@ -71,7 +71,7 @@ void main(List<String> arguments) async {
     final String version = pubspec[Global.version];
     final String description = pubspec[Global.description];
     print('$name $version - $description serving at http://${server.address.host}:${server.port}');
-    print('options: connections=$connectionsOption, destination=$destinationOption:$destinationPortOption, app=$appOption, data=$dataOption');
+    print('options: connections=$connectionsOption, epoch=$epochOption, destination=$destinationOption:$destinationPortOption, app=$appOption, data=$dataOption');
 
     /// Make connections automatically
     final int makeConnections = int.tryParse(connectionsOption)!;
