@@ -53,7 +53,8 @@ void main(List<String> arguments) async {
     /// 
     final String host = Global.defaultHost;
     final int port = int.tryParse(portOption)!;
-    final Handler handler = API().v1(
+    final API api = API();
+    final Handler handler = api.v1(
       destinationPort: destinationPortOption,
       destination: destinationOption,
       data: dataOption,
@@ -67,6 +68,10 @@ void main(List<String> arguments) async {
     final String description = pubspec[Global.description];
     print('$name $version - $description serving at http://${server.address.host}:${server.port}');
     print('options: connections=$connectionsOption, destination=$destinationOption:$destinationPortOption, app=$appOption, data=$dataOption');
+
+    /// Make connections automatically
+    final int makeConnections = int.tryParse(connectionsOption)!;
+    if (makeConnections > 0) api.service.open(connections: connectionsOption);
   } catch (exc) {
     print('$function: $exc');
   }

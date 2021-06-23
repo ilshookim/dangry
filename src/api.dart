@@ -147,7 +147,6 @@ class API {
       service.destinationPort = destinationPort ?? service.destinationPort;
       service.data = data ?? service.data;
       service.app = app ?? service.app;
-      service.open();
     }
     final Handler defaultHandler = Pipeline().addHandler((Request request) {
       return Response.ok('Request for ${request.url}');
