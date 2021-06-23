@@ -26,7 +26,7 @@ class Service {
     final String function = 'Service.open';
     int count = 0;
     try {
-      final String conns = connections ?? "0";
+      final String conns = connections ?? '0';
       final String dest = destination ?? this.destination;
       final String port = destinationPort ?? this.destinationPort;
 

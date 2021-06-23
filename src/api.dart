@@ -49,7 +49,7 @@ class API {
       final String? connectionsParam = uri.queryParameters[Global.paramConnections];
       final String destinationPort = destinationPortParam ?? service.destinationPort;
       final String destination = destinationParam ?? service.destination;
-      final String connections = connectionsParam ?? "0";
+      final String connections = connectionsParam ?? '0';
       message = 'connections=$connections, destination=$destination:$destinationPort';
       service.open(connections: connections, destination: destination, destinationPort: destinationPort);
     } catch (exc) {
@@ -83,7 +83,7 @@ class API {
     String message = 'empty';
     try {
       final String? dataParam = uri.queryParameters[Global.paramData];
-      final String data = dataParam ?? "(empty)";
+      final String data = dataParam ?? '(empty)';
       final int connections = service.connections();
       message = 'connections=$connections, data: length=${data.length}';
       service.set(data);
@@ -124,7 +124,7 @@ class API {
       router.get(uri(Global.uriSet), onSet);
       router.get(uri(Global.uriGetDel), onGetDel);
 
-      const String ver1 = "v1";
+      const String ver1 = 'v1';
       router.get(uri(Global.uriConfigure, version: ver1), onConfigure);
       router.get(uri(Global.uriOpen, version: ver1), onOpen);
       router.get(uri(Global.uriClose, version: ver1), onClose);
