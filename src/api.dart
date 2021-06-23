@@ -22,17 +22,15 @@ class API {
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
-      final String? destinationPortParam = uri.queryParameters[Global.destinationPortParam];
-      final String? destinationParam = uri.queryParameters[Global.destinationParam];
-      final String? connectionsParam = uri.queryParameters[Global.connectionsParam];
-      final String? dataParam = uri.queryParameters[Global.dataParam];
-      final String? appParam = uri.queryParameters[Global.appParam];
-      service.destPort = destinationPortParam ?? service.destPort;
-      service.dest = destinationParam ?? service.dest;
-      service.conns = connectionsParam ?? service.conns;
+      final String? destinationPortParam = uri.queryParameters[Global.paramDestinationPort];
+      final String? destinationParam = uri.queryParameters[Global.paramDestination];
+      final String? dataParam = uri.queryParameters[Global.paramData];
+      final String? appParam = uri.queryParameters[Global.paramApp];
+      service.destinationPort = destinationPortParam ?? service.destinationPort;
+      service.destination = destinationParam ?? service.destination;
       service.data = dataParam ?? service.data;
       service.app = appParam ?? service.app;
-      message = 'connections=${service.conns}, destination=${service.dest}:${service.destPort}, app=${service.app}, data=${service.data}';
+      message = 'destination=${service.destination}:${service.destinationPort}, app=${service.app}, data=${service.data}';
     } catch (exc) {
       message = '$function: $exc';
     } finally {
@@ -41,20 +39,36 @@ class API {
     return Response.ok(message + '\n');
   }
 
-  /// connections to create: curl http://localhost:8080/v1/service?connections=450&destination=localhost&port=2404
-  Response onService(Request request) {
+  /// open: curl http://localhost:8080/v1/open?connections=450&destination=localhost&port=2404
+  Response onOpen(Request request) {
     final String function = Trace.current().frames[0].member!;
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
-      final String? destinationPortParam = uri.queryParameters[Global.destinationPortParam];
-      final String? destinationParam = uri.queryParameters[Global.destinationParam];
-      final String? connectionsParam = uri.queryParameters[Global.connectionsParam];
-      final String destinationPort = destinationPortParam ?? service.destPort;
-      final String destination = destinationParam ?? service.dest;
-      final String connections = connectionsParam ?? service.conns;
+      final String? destinationPortParam = uri.queryParameters[Global.paramDestinationPort];
+      final String? destinationParam = uri.queryParameters[Global.paramDestination];
+      final String? connectionsParam = uri.queryParameters[Global.paramConnections];
+      final String destinationPort = destinationPortParam ?? service.destinationPort;
+      final String destination = destinationParam ?? service.destination;
+      final String connections = connectionsParam ?? "0";
       message = 'connections=$connections, destination=$destination:$destinationPort';
-      service.connections(connections: connections, destination: destination, destinationPort: destinationPort);
+      service.open(connections: connections, destination: destination, destinationPort: destinationPort);
+    } catch (exc) {
+      message = '$function: $exc';
+    } finally {
+      print('$uri: $function: $message');
+    }
+    return Response.ok(message + '\n');
+  }
+
+  /// close: curl http://localhost:8080/v1/close
+  Response onClose(Request request) {
+    final String function = Trace.current().frames[0].member!;
+    final Uri uri = request.requestedUri;
+    String message = 'empty';
+    try {
+      int count = service.close();
+      message = 'disconnects=$count';
     } catch (exc) {
       message = '$function: $exc';
     } finally {
@@ -69,9 +83,11 @@ class API {
     final Uri uri = request.requestedUri;
     String message = 'empty';
     try {
-      final String value = 'hello';
-      service.set(value);
-      message = 'set: $value';
+      final String? dataParam = uri.queryParameters[Global.paramData];
+      final String data = dataParam ?? "(empty)";
+      final int connections = service.connections();
+      message = 'connections=$connections, data=$data';
+      service.set(data);
     } catch (exc) {
       message = '$function: $exc';
     } finally {
@@ -102,16 +118,18 @@ class API {
     String? data}) {
     final String function = Trace.current().frames[0].member!;
     try {
-      router.get(uri('configure'), onConfigure);
-      router.get(uri('service'), onService);
-      router.get(uri('getdel'), onGetDel);
-      router.get(uri('set'), onSet);
+      router.get(uri(Global.uriConfigure), onConfigure);
+      router.get(uri(Global.uriOpen), onOpen);
+      router.get(uri(Global.uriClose), onClose);
+      router.get(uri(Global.uriSet), onSet);
+      router.get(uri(Global.uriGetDel), onGetDel);
 
-      final String ver1 = "v1";
-      router.get(uri('configure', version: ver1), onConfigure);
-      router.get(uri('service', version: ver1), onService);
-      router.get(uri('getdel', version: ver1), onGetDel);
-      router.get(uri('set', version: ver1), onSet);
+      const String ver1 = "v1";
+      router.get(uri(Global.uriConfigure, version: ver1), onConfigure);
+      router.get(uri(Global.uriOpen, version: ver1), onOpen);
+      router.get(uri(Global.uriClose, version: ver1), onClose);
+      router.get(uri(Global.uriSet, version: ver1), onSet);
+      router.get(uri(Global.uriGetDel, version: ver1), onGetDel);
 
       final Handler index = createStaticHandler(Global.currentPath,
           defaultDocument: Global.indexName);
@@ -125,12 +143,11 @@ class API {
     } catch (exc) {
       print('$function: $exc');
     } finally {
-      service.conns = connections ?? service.conns;
-      service.dest = destination ?? service.dest;
-      service.destPort = destinationPort ?? service.destPort;
+      service.destination = destination ?? service.destination;
+      service.destinationPort = destinationPort ?? service.destinationPort;
       service.data = data ?? service.data;
       service.app = app ?? service.app;
-      service.start();
+      service.open();
     }
     final Handler defaultHandler = Pipeline().addHandler((Request request) {
       return Response.ok('Request for ${request.url}');

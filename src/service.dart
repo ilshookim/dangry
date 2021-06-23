@@ -11,69 +11,68 @@ import 'package:stack_trace/stack_trace.dart';
 import 'global.dart';
 
 class Service {
-  String destPort = Global.defaultConnectionsOption;
-  String dest = Global.defaultDestinationOption;
-  String conns = Global.defaultConnectionsOption;
+  String destinationPort = Global.defaultConnectionsOption;
+  String destination = Global.defaultDestinationOption;
   String data = Global.defaultDataOption;
   String app = Global.defaultAppOption;
 
   Map<WebSocket, String> _connections = Map();
 
-  Stopwatch _consume = Stopwatch();
-  Timer? _timer;
-
-  bool get isActive => _timer != null && _timer!.isActive;
-  bool get isRunning => _consume.isRunning;
-
-  bool start() {
-    final String function = Trace.current().frames[0].member!;
-    bool succeed = false;
-    try {
-      succeed = true;
-    } catch (exc) {
-      print('$function: $exc');
-    }
-    return succeed;
-  }
-
-  bool stop() {
-    final String function = Trace.current().frames[0].member!;
-    bool succeed = false;
-    try {
-      succeed = true;
-    } catch (exc) {
-      print('$function: $exc');
-    }
-    return succeed;
-  }
-
-  bool connections({
+  int open({
     String? connections, 
     String? destination, 
     String? destinationPort}) {
     final String function = Trace.current().frames[0].member!;
+    int count = 0;
+    try {
+      final String conns = connections ?? "0";
+      final String dest = destination ?? this.destination;
+      final String port = destinationPort ?? this.destinationPort;
+
+      count = int.tryParse(conns)!;
+      print('$function: count=$count, destination=$dest:$port');
+
+      String url = 'ws://$dest:$port';
+      _makeConnections(url, count);
+    } catch (exc) {
+      print('$function: $exc');
+    }
+    return count;
+  }
+
+  int close() {
+    final String function = Trace.current().frames[0].member!;
+    int count = 0;
+    try {
+      _connections.forEach((ws, cid) {
+        ws.close().then((_) {
+          print('$function: cid=$cid');
+        });
+      });
+      count = _connections.length;
+    } catch (exc) {
+      print('$function: $exc');
+    }
+    return count;
+  }
+
+  int connections() {
+    return _connections.length;
+  }
+
+  Future<bool> _makeConnections(String url, int count) async {
+    final String function = Trace.current().frames[0].member!;
     bool succeed = false;
     try {
-      final String conns = connections ?? this.conns;
-      final String dest = destination ?? this.dest;
-      final String destPort = destinationPort ?? this.destPort;
-      final int older = int.tryParse(this.conns)!;
-      final int newly = int.tryParse(conns)!;
-
-      int count = newly - older;
-      print('$function: count=$count (older=$older, newly=$newly), destination=$dest:$destPort');
-
-      String url = 'ws://$dest:$destPort';
       print('$function: connect: count=$count, url=$url');
       while (count > 0) {
-        WebSocket.connect(url).then((WebSocket ws) {
+        WebSocket ws = await WebSocket.connect(url);
+        if (ws.readyState == WebSocket.open) {
           final String cid = _connected(ws, url);
           _listen(ws, cid);
-        });
-        count--;
+          count--;
+        }
       }
-
-      succeed = true;
     } catch (exc) {
       print('$function: $exc');
     }

@@ -38,11 +38,16 @@ class Global {
   static final String defaultAppOption = 'home';
   static final String appEnvOption = '${defaultApp}_APP';
 
-  static final String destinationParam = destinationOption;
-  static final String destinationPortParam = destinationPortOption;
-  static final String connectionsParam = connectionsOption;
-  static final String dataParam = dataOption;
-  static final String appParam = appOption;
+  static final String uriConfigure = "configure";
+  static final String uriOpen = "open";
+  static final String uriClose = "close";
+  static final String uriSet = "set";
+  static final String uriGetDel = "getdel";
+  static final String paramDestination = destinationOption;
+  static final String paramDestinationPort = destinationPortOption;
+  static final String paramConnections = connectionsOption;
+  static final String paramData = dataOption;
+  static final String paramApp = appOption;
 
   static final String indexName = 'index.html';
   static final String faviconName = 'favicon.ico';

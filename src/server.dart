@@ -45,18 +45,17 @@ void main(List<String> arguments) async {
 
     /// API
     /// 
-    /// configure:              curl http://localhost:8088/v1/configure?data=3KB&app=home1&connections=450
-    /// connections to create:  curl http://localhost:8080/v1/service?connections=450&destination=localhost&port=2404
-    /// connections to delete:  curl http://localhost:8080/v1/service?connections=0
-    /// set:                    curl http://localhost:8088/v1/set?id=0&count=1&data=10KB&app=home
-    /// getdel:                 curl http://localhost:8088/v1/getdel?id=0&count=1&app=home
+    /// configure:  curl http://localhost:8088/v1/configure?data=3KB&app=home1&connections=450
+    /// open:       curl http://localhost:8080/v1/open?connections=450&destination=localhost&port=2404
+    /// close:      curl http://localhost:8080/v1/close
+    /// set:        curl http://localhost:8088/v1/set?id=0&count=1&data=10KB&app=home
+    /// getdel:     curl http://localhost:8088/v1/getdel?id=0&count=1&app=home
     /// 
     final String host = Global.defaultHost;
     final int port = int.tryParse(portOption)!;
     final Handler handler = API().v1(
       destinationPort: destinationPortOption,
       destination: destinationOption,
-      connections: connectionsOption,
       data: dataOption,
       app: appOption,
     );
