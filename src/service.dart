@@ -64,19 +64,25 @@ class Service {
   Future<bool> _makeConnections(String url, int count) async {
     final String function = 'Service._makeConnections';
     bool succeed = false;
-    try {
-      print('$function: connect: count=$count, url=$url');
-      while (count > 0) {
+    const int failedUnconnections = 3;
+    int unconnections = 0;
+    while (count > 0) {
+      try {
+        print('$function: connect: count=$count, url=$url');
         WebSocket ws = await WebSocket.connect(url);
         if (ws.readyState == WebSocket.open) {
           final String cid = _connected(ws, url);
           _listen(ws, cid);
           count--;
         }
+      } catch (exc) {
+        print('$function: $exc, unconnections=${unconnections++}');
+        if (unconnections >= failedUnconnections)
+          break;
       }
-    } catch (exc) {
-      print('$function: $exc');
     }
+    succeed = count == 0;
+    if (!succeed) print('$function: [failed] url=$url, unconnections=$unconnections, count=$count');
     return succeed;
   }
 
